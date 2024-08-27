@@ -80,6 +80,8 @@ func main() {
 		}
 	}
 
+	fmt.Printf("The response values depends on the broker verion in use, if the broker version does not support a feature or option, it will be ignored\n")
+
 	// Create a new AdminClient.
 	a, err := kafka.NewAdminClient(&kafka.ConfigMap{"bootstrap.servers": bootstrapServers})
 	if err != nil {

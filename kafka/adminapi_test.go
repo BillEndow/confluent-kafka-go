@@ -448,7 +448,7 @@ func testAdminAPIsListConsumerGroups(
 		t.Fatalf("Expected ConsumerGroupStateFromString to work for Stable state")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), expDuration)
+	ctx, cancel = context.WithTimeout(context.Background(), expDuration)
 	defer cancel()
 
 	listres, err := a.ListConsumerGroups(
@@ -467,18 +467,16 @@ func testAdminAPIsListConsumerGroups(
 		t.Fatalf("Expected ConsumerGroupTypeFromString to work for Unknown type")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), expDuration)
+	ctx, cancel = context.WithTimeout(context.Background(), expDuration)
 	defer cancel()
- 
-  listres, err := a.ListConsumerGroups(
+
+	listres, err = a.ListConsumerGroups(
 		ctx, SetAdminRequestTimeout(time.Second),
 		SetAdminMatchConsumerGroupTypes([]ConsumerGroupType{unknownGroupType}))
-	if err == nil {
-		t.Fatalf("Expected ListConsumerGroups to fail, but got result: %v, err: %v",
+
+	if err.(Error).Code() != ErrInvalidArg {
+		t.Fatalf("Expected ListConsumerGroups to fail when unknown group type option is set, but got result: %v, err: %v",
 			listres, err)
-	}
-	if ctx.Err() != context.DeadlineExceeded {
-		t.Fatalf("Expected DeadlineExceeded, not %v", ctx.Err())
 	}
 
 	classicGroupType, err := ConsumerGroupTypeFromString("Classic")
@@ -486,19 +484,18 @@ func testAdminAPIsListConsumerGroups(
 		t.Fatalf("Expected ConsumerGroupTypeFromString to work for Classic type")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), expDuration)
+	ctx, cancel = context.WithTimeout(context.Background(), expDuration)
 	defer cancel()
 
-	listres, err := a.ListConsumerGroups(
+	listres, err = a.ListConsumerGroups(
 		ctx, SetAdminRequestTimeout(time.Second),
 		SetAdminMatchConsumerGroupTypes([]ConsumerGroupType{classicGroupType, classicGroupType}))
-	if err == nil {
-		t.Fatalf("Expected ListConsumerGroups to fail, but got result: %v, err: %v",
+
+	if err.(Error).Code() != ErrInvalidArg {
+		t.Fatalf("Expected ListConsumerGroups to fail when duplicate group type options are set, but got result: %v, err: %v",
 			listres, err)
 	}
-	if ctx.Err() != context.DeadlineExceeded {
-		t.Fatalf("Expected DeadlineExceeded, not %v", ctx.Err())
-	}
+
 }
 
 func testAdminAPIsDescribeConsumerGroups(
